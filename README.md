@@ -1,5 +1,6 @@
 
 
+
 # 🍳 Recipe Book Static Website - DevOps Project
 
 [![Website](https://img.shields.io/badge/Website-Live-green)](http://13.215.50.74)
@@ -14,17 +15,17 @@
 A complete DevOps implementation of a static recipe book website deployed on AWS EC2 using Docker, Terraform, and Ansible. This project demonstrates the entire DevOps lifecycle from development to production deployment.
 
 ### 🎯 Key Features
-- ✅ **Static Website** - Modern recipe book with responsive design
-- ✅ **Docker Containerization** - Lightweight Nginx Alpine container
-- ✅ **Infrastructure as Code** - AWS resources provisioned with Terraform
-- ✅ **Configuration Management** - Automated deployment with Ansible
-- ✅ **Cloud Deployment** - AWS EC2 (Singapore region, Free Tier)
-- ✅ **Version Control** - Complete Git repository
+- ✅ **Static Website** – Modern recipe book with responsive design
+- ✅ **Docker Containerization** – Lightweight Nginx Alpine container
+- ✅ **Infrastructure as Code** – AWS resources provisioned with Terraform
+- ✅ **Configuration Management** – Automated deployment with Ansible
+- ✅ **Cloud Deployment** – AWS EC2 (Singapore region, Free Tier)
+- ✅ **Version Control** – Complete Git repository
 
 ### 🌐 Live Demo
 **Access the live website:** [http://13.215.50.74](http://13.215.50.74)
 
-
+---
 
 ## 📸 Screenshots
 
@@ -34,7 +35,6 @@ A complete DevOps implementation of a static recipe book website deployed on AWS
 *Main landing page with hero section and navigation*
 
 ### Recipe Cards
-
 *Featured recipe cards with images and descriptions*
 
 ### AWS EC2 Console
@@ -46,8 +46,6 @@ A complete DevOps implementation of a static recipe book website deployed on AWS
 <img width="727" height="865" alt="Screenshot 2026-03-27 at 7 35 35 PM" src="https://github.com/user-attachments/assets/55725f4d-b151-4ce4-bf9d-2652b652505a" />
 
 *Terraform infrastructure provisioning*
-
-
 
 ---
 
@@ -72,6 +70,7 @@ A complete DevOps implementation of a static recipe book website deployed on AWS
 
 ## 📁 Project Structure
 
+```
 recipe-book-website/
 │
 ├── website/                      # Static website files
@@ -95,7 +94,7 @@ recipe-book-website/
 ├── .gitignore                    # Git ignore rules
 ├── README.md                     # Project documentation
 └── LICENSE                       # MIT License
-
+```
 
 ---
 
@@ -103,37 +102,35 @@ recipe-book-website/
 
 ### Prerequisites
 
-Before you begin, ensure you have the following installed:
-
 - [AWS Account](https://aws.amazon.com/) (Free Tier)
 - [Terraform](https://www.terraform.io/downloads) (v1.5+)
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) (v2.14+)
 - [Docker](https://docs.docker.com/get-docker/) (v24.0+)
 - [Git](https://git-scm.com/downloads) (v2.40+)
-- [AWS CLI](https://aws.amazon.com/cli/) (configured)
+- [AWS CLI](https://aws.amazon.com/cli/) (configured with credentials)
 
 ### Step 1: Clone Repository
 
-
+```bash
 git clone https://github.com/areppzubaidi/recipe-book-website.git
 cd recipe-book-website
-
+```
 
 ### Step 2: Generate SSH Key Pair
 
-
+```bash
 ssh-keygen -t rsa -b 2048 -f ~/.ssh/recipe-book-key -N ""
 chmod 400 ~/.ssh/recipe-book-key
-
+```
 
 ### Step 3: Import SSH Key to AWS
 
-
+```bash
 aws ec2 import-key-pair \
     --key-name "recipe-book-key" \
     --public-key-material fileb://~/.ssh/recipe-book-key.pub \
     --region ap-southeast-1
-
+```
 
 ### Step 4: Deploy Infrastructure with Terraform
 
@@ -144,29 +141,27 @@ terraform plan
 terraform apply -auto-approve
 ```
 
-After apply, note the public IP output.
+After `apply`, note the public IP output.
 
 ### Step 5: Update Ansible Inventory
 
-
+```bash
 cd ../ansible
-# Edit inventory.ini with the EC2 public IP
-echo "[webserver]
-recipe-book-server ansible_host=<EC2_PUBLIC_IP> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/recipe-book-key" > inventory.ini
-
+cat > inventory.ini << EOF
+[webserver]
+recipe-book-server ansible_host=<EC2_PUBLIC_IP> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/recipe-book-key
+EOF
+```
 
 ### Step 6: Deploy Application with Ansible
 
-
+```bash
 ansible-playbook -i inventory.ini deploy-docker.yml
-
+```
 
 ### Step 7: Access Website
 
-Open your browser and navigate to:
-
-http://<EC2_PUBLIC_IP>
-
+Open your browser and navigate to `http://<EC2_PUBLIC_IP>`.
 
 ---
 
@@ -174,35 +169,41 @@ http://<EC2_PUBLIC_IP>
 
 ### SSH into EC2 Instance
 
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74
-
+```bash
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP>
+```
 
 ### Check Docker Container Status
 
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "docker ps"
-
+```bash
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP> "docker ps"
+```
 
 ### View Container Logs
 
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "docker logs recipe-book"
-
+```bash
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP> "docker logs recipe-book"
+```
 
 ### Restart Docker Container
 
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "docker restart recipe-book"
-
+```bash
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP> "docker restart recipe-book"
+```
 
 ### Update Website Files
 
+```bash
 cd ansible
 ansible-playbook -i inventory.ini deploy-docker.yml
-
+```
 
 ### Destroy All Resources (Cleanup)
 
+```bash
 cd terraform
 terraform destroy -auto-approve
-
+```
 
 ---
 
@@ -234,11 +235,11 @@ terraform destroy -auto-approve
 
 ## 🔒 Security Best Practices
 
-1. **SSH Keys**: Never commit private keys to repository
-2. **Security Groups**: Limit SSH access to your IP
-3. **Terraform State**: Consider remote backend for team environments
-4. **Secrets Management**: Use environment variables or AWS Secrets Manager
-5. **Regular Updates**: Keep Ubuntu and Docker packages updated
+1. **SSH Keys**: Never commit private keys to the repository.
+2. **Security Groups**: Limit SSH access to your IP (use `0.0.0.0/0` only for testing).
+3. **Terraform State**: Consider using a remote backend (S3 + DynamoDB) for team environments.
+4. **Secrets Management**: Use environment variables or AWS Secrets Manager for sensitive data.
+5. **Regular Updates**: Keep Ubuntu and Docker packages updated.
 
 ---
 
@@ -246,46 +247,50 @@ terraform destroy -auto-approve
 
 ### Website Not Accessible
 
+```bash
 # Check container is running
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "docker ps"
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP> "docker ps"
 
 # Check container logs
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "docker logs recipe-book"
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP> "docker logs recipe-book"
 
 # Restart container
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "docker restart recipe-book"
-
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP> "docker restart recipe-book"
+```
 
 ### SSH Connection Failed
 
+```bash
 # Verify key permissions
 chmod 400 ~/.ssh/recipe-book-key
 
 # Test connection
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP>
 
 # Check security group rules
 aws ec2 describe-security-groups --group-ids sg-xxxxxxxxx
-
+```
 
 ### Terraform Apply Fails
 
+```bash
 # Refresh state
 terraform refresh
 
 # Destroy and recreate
 terraform destroy -auto-approve
 terraform apply -auto-approve
-
+```
 
 ### Ansible Connection Failed
 
+```bash
 # Test connectivity
 ansible -i inventory.ini -m ping all
 
-# Install Python on remote host
-ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "sudo apt-get install -y python3"
-
+# Install Python on remote host (if missing)
+ssh -i ~/.ssh/recipe-book-key ubuntu@<EC2_PUBLIC_IP> "sudo apt-get update && sudo apt-get install -y python3"
+```
 
 ---
 
@@ -296,7 +301,7 @@ ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "sudo apt-get install -y pytho
 - [ ] **CI/CD Pipeline**: GitLab CI/CD for automated deployments
 - [ ] **Monitoring**: Set up CloudWatch and Prometheus metrics
 - [ ] **Backup**: Automated EBS snapshots
-- [ ] **Scaling**: Auto-scaling group with load balancer
+- [ ] **Scaling**: Auto‑scaling group with load balancer
 - [ ] **Database**: Add PostgreSQL for user recipes
 - [ ] **Authentication**: User login and recipe saving
 - [ ] **CDN**: CloudFront for global content delivery
@@ -331,7 +336,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -348,9 +353,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-**Author**: Arepp Zubaidi
-- **GitHub**: [@areppzubaidi](https://github.com/areppzubaidi)
-- **Project Link**: [https://github.com/areppzubaidi/recipe-book-website](https://github.com/areppzubaidi/recipe-book-website)
+**Author**: Arepp Zubaidi  
+- **GitHub**: [@areppzubaidi](https://github.com/areppzubaidi)  
+- **Project Link**: [https://github.com/areppzubaidi/recipe-book-website](https://github.com/areppzubaidi/recipe-book-website)  
 - **Live Demo**: [http://13.215.50.74](http://13.215.50.74)
 
 ---
@@ -364,45 +369,266 @@ If you found this project helpful, please give it a star on GitHub!
 ---
 
 **Built with ❤️ as part of a complete DevOps implementation**
+```
 
-EOF
+---
 
+### 2. `docker/Dockerfile` – Optimised
 
-## Create Screenshots Directory
+```dockerfile
+FROM nginx:alpine
 
+# Copy static website files
+COPY ./website /usr/share/nginx/html
 
-# Create screenshots directory
-mkdir -p ~/recipe-book-website/screenshots
+# Expose port 80
+EXPOSE 80
 
-# Create placeholder images
-cd ~/recipe-book-website/screenshots
+# Healthcheck (optional)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+```
 
-# Create placeholder text files (replace with actual screenshots)
-cat > README.txt << 'EOF'
-Place your screenshots here:
+---
 
-1. homepage.png - Main website landing page
-2. recipes.png - Recipe cards section
-3. mobile-view.png - Responsive design on mobile
-4. docker-container.png - Docker container status
-5. aws-ec2.png - AWS EC2 console showing instance
-6. terraform-apply.png - Terraform apply output
-7. ansible-playbook.png - Ansible playbook execution
+### 3. Terraform Files
 
-To take screenshots:
-- Website: Use browser developer tools or screenshot tool
-- Docker: ssh to EC2 and take screenshot
-- AWS: Capture EC2 console
-- Terraform/Ansible: Capture terminal output
-EOF
+#### `terraform/variables.tf`
 
-echo "✅ Screenshots directory created"
+```hcl
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+  default     = "ap-southeast-1"
+}
 
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
+}
 
-## Add License File
+variable "key_name" {
+  description = "SSH key pair name"
+  type        = string
+  default     = "recipe-book-key"
+}
 
+variable "allowed_ssh_cidr" {
+  description = "CIDR block for SSH access (replace with your IP)"
+  type        = string
+  default     = "0.0.0.0/0"   # Change to your IP for security
+}
+```
 
-cat > ~/recipe-book-website/LICENSE << 'EOF'
+#### `terraform/main.tf`
+
+```hcl
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
+# Security Group
+resource "aws_security_group" "web_sg" {
+  name        = "recipe-book-web-sg"
+  description = "Allow HTTP and SSH"
+
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "SSH from allowed CIDR"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.allowed_ssh_cidr]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "recipe-book-web-sg"
+  }
+}
+
+# EC2 Instance
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+}
+
+resource "aws_instance" "web" {
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+
+  tags = {
+    Name = "recipe-book-server"
+  }
+}
+```
+
+#### `terraform/outputs.tf`
+
+```hcl
+output "public_ip" {
+  description = "Public IP of EC2 instance"
+  value       = aws_instance.web.public_ip
+}
+
+output "public_dns" {
+  description = "Public DNS of EC2 instance"
+  value       = aws_instance.web.public_dns
+}
+```
+
+---
+
+### 4. Ansible Playbook
+
+#### `ansible/deploy-docker.yml`
+
+```yaml
+---
+- name: Deploy Recipe Book Website
+  hosts: webserver
+  become: yes
+  vars:
+    container_name: recipe-book
+    image_name: recipe-book
+    host_port: 80
+    container_port: 80
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Ensure Docker service is running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create directory for website files
+      file:
+        path: /tmp/recipe-book
+        state: directory
+        mode: '0755'
+
+    - name: Copy website files to remote host
+      synchronize:
+        src: ../website/
+        dest: /tmp/recipe-book/
+        delete: yes
+      delegate_to: localhost
+
+    - name: Build Docker image
+      docker_image:
+        name: "{{ image_name }}"
+        build:
+          path: /tmp/recipe-book
+        source: build
+        state: present
+
+    - name: Remove existing container if present
+      docker_container:
+        name: "{{ container_name }}"
+        state: absent
+
+    - name: Run Docker container
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image_name }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "{{ host_port }}:{{ container_port }}"
+```
+
+#### `ansible/inventory.ini` (template)
+
+```ini
+[webserver]
+recipe-book-server ansible_host=<EC2_PUBLIC_IP> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/recipe-book-key
+```
+
+---
+
+### 5. `.gitignore`
+
+```
+# Terraform
+terraform/.terraform/
+terraform/terraform.tfstate*
+terraform/*.tfstate*
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+
+# Ansible
+ansible/*.retry
+ansible/inventory.ini   # (if it contains real IPs; you may want to keep a template)
+
+# SSH keys
+*.pem
+*.key
+*.pub
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+```
+
+---
+
+### 6. `LICENSE`
+
+```text
 MIT License
 
 Copyright (c) 2024 Arepp Zubaidi
@@ -424,63 +650,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-EOF
+```
 
+---
 
-## Add Files to Git and Push
+## 📌 How to Apply These Files
 
+1. **Replace** the existing files in your repository with the corrected versions above.
+2. **Update** the `allowed_ssh_cidr` in `terraform/variables.tf` to your actual IP (for security).
+3. **Run** the Quick Start steps again (from `terraform init` onward).
+4. **Take screenshots** as described in the README and place them in `screenshots/` (optional).
+5. **Commit** and **push** all changes to your GitHub repository.
 
-cd ~/recipe-book-website
-
-# Add new files
-git add README.md LICENSE screenshots/
-
-# Commit
-git commit -m "Add comprehensive README with documentation and screenshots
-
-- Complete project documentation
-- Architecture diagram
-- Setup instructions
-- Troubleshooting guide
-- Management commands
-- License file
-- Screenshots placeholder"
-
-# Push to GitHub
-git push origin main --force
-
-
-## Take and Add Actual Screenshots
-
-To add actual screenshots:
-
-1. **Website Screenshots**:
-
-   # Open website and take screenshots
-   open http://13.215.50.74
-   # Use Cmd+Shift+4 to capture
-   
-
-2. **Docker Container**:
-   
-   ssh -i ~/.ssh/recipe-book-key ubuntu@13.215.50.74 "docker ps"
-   # Capture terminal output
-   
-
-3. **Terraform Apply**:
-   
-   cd ~/recipe-book-website/terraform
-   terraform apply -auto-approve
-   # Capture terminal output
-   
-
-4. **Ansible Playbook**:
-   
-   cd ~/recipe-book-website/ansible
-   ansible-playbook -i inventory.ini deploy-docker.yml
-   # Capture terminal output
-  
-
-Replace placeholder images with actual screenshots and commit them to the repository.
-
-Your comprehensive README is now ready! 🎉
+Now your project is clean, well‑documented, and ready for sharing or further enhancements. Let me know if you need any additional help!
