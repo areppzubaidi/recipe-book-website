@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Book | Delicious Homemade Recipes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>🍳 Recipe Book</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#recipes">Recipes</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h2>Welcome to Our Recipe Book</h2>
+                <p>Discover delicious homemade recipes for every occasion</p>
+                <button onclick="scrollToRecipes()" class="btn">Explore Recipes</button>
+            </div>
+        </section>
+
+        <section id="recipes" class="recipes-section">
+            <h2>Featured Recipes</h2>
+            <div class="recipe-grid" id="recipeGrid"></div>
+        </section>
+
+        <section id="about" class="about-section">
+            <h2>About Us</h2>
+            <p>We're passionate about sharing delicious recipes that bring people together. Our recipe book features carefully curated dishes from around the world.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Recipe Book. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
